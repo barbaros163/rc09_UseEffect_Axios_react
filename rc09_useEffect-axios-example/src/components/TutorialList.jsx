@@ -1,7 +1,36 @@
 import { FaEdit } from "react-icons/fa";
 import { AiFillDelete } from "react-icons/ai";
+import axios from "axios";
+import EditTutorial from "./EditTutorial";
+import { useState } from "react";
 
-const TutorialList = ({ tutorials }) => {
+const TutorialList = ({ tutor, getTutorials }) => {
+  const [editItem, setEditItem] = useState("");
+
+  //! DELETE (CRUD-Delete)
+  const deleteTutorial = async (id) => {
+    const url = "https://tutorials-api-cw.herokuapp.com/api/tutorials";
+    try {
+      await axios.delete(`${url}/${id}`);
+    } catch (error) {
+      console.log(error);
+    }
+    getTutorials();
+  };
+
+  // //! PUT (CRUD-Update)
+  // //! PUT: Whole Update, PATCH: Partially Update
+  // const editTutorial = async ({ id, title, description }) => {
+  //   // const { id, title, description } = item;
+  //   const url = "https://tutorials-api-cw.herokuapp.com/api/tutorials";
+  //   try {
+  //     await axios.put(`${url}/${id}`, { title, description });
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  //   getTutorials();
+  // };
+
   return (
     <div className="container mt-4">
       <table className="table table-striped">
@@ -16,7 +45,7 @@ const TutorialList = ({ tutorials }) => {
           </tr>
         </thead>
         <tbody>
-          {tutorials?.map((item) => {
+          {tutor?.map((item) => {
             const { id, title, description } = item;
             return (
               <tr key={id}>
@@ -27,12 +56,23 @@ const TutorialList = ({ tutorials }) => {
                   <FaEdit
                     size={20}
                     type="button"
+                    data-bs-toggle="modal"
+                    data-bs-target="#edit-modal"
                     className="me-2 text-warning"
+                    // onClick={() =>
+                    //   editTutorial({
+                    //     id: "1581",
+                    //     title: "UPDATE",
+                    //     description: "UPDATE",
+                    //   })
+                    // }
+                    onClick={() => setEditItem(item)}
                   />
                   <AiFillDelete
                     size={22}
                     type="button"
-                    className="text-danger"
+                    className="text-danger "
+                    onClick={() => deleteTutorial(id)}
                   />
                 </td>
               </tr>
@@ -40,6 +80,8 @@ const TutorialList = ({ tutorials }) => {
           })}
         </tbody>
       </table>
+
+      <EditTutorial editItem={editItem} getTutorials={getTutorials} />
     </div>
   );
 };
